@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { TAddress, TFullName, TOrder, TUser } from './user.interface'
+import { TAddress, TFullName, TUser } from './user.interface'
 
 //create fullname schema
 const FullNameSchema = new Schema<TFullName>({
@@ -27,11 +27,11 @@ const AddressSchema = new Schema<TAddress>({
 })
 
 //create order schema
-const OrderSchema = new Schema<TOrder>({
-  productName: { type: String, required: true },
-  price: { type: Number, required: true, min: 0 },
-  quantity: { type: Number, required: true, min: 1 },
-})
+// const OrderSchema = new Schema<TOrder>({
+//   productName: { type: String },
+//   price: { type: Number, min: 0 },
+//   quantity: { type: Number, min: 1 },
+// })
 //create user schema
 const userSchema = new Schema<TUser>({
   userId: {
@@ -77,10 +77,9 @@ const userSchema = new Schema<TUser>({
     type: AddressSchema,
     required: true,
   },
-  orders: {
-    type: [OrderSchema],
-    required: true,
-  },
+  //   orders: {
+  //     type: [OrderSchema],
+  //   },
 })
 
 //create model

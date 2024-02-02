@@ -1,7 +1,7 @@
 import express from 'express'
+import { userController } from './user.controller'
 
 const route = express.Router()
-route.post('/',)
-
+route.post('/', userController.createUser)
 
 export const userRoute = route

@@ -26,11 +26,11 @@ const AddressSchema = new mongoose_1.Schema({
     country: { type: String, required: true, trim: true },
 });
 //create order schema
-const OrderSchema = new mongoose_1.Schema({
-    productName: { type: String, required: true },
-    price: { type: Number, required: true, min: 0 },
-    quantity: { type: Number, required: true, min: 1 },
-});
+// const OrderSchema = new Schema<TOrder>({
+//   productName: { type: String },
+//   price: { type: Number, min: 0 },
+//   quantity: { type: Number, min: 1 },
+// })
 //create user schema
 const userSchema = new mongoose_1.Schema({
     userId: {
@@ -76,10 +76,9 @@ const userSchema = new mongoose_1.Schema({
         type: AddressSchema,
         required: true,
     },
-    orders: {
-        type: [OrderSchema],
-        required: true,
-    },
+    //   orders: {
+    //     type: [OrderSchema],
+    //   },
 });
 //create model
 exports.User = (0, mongoose_1.model)('user', userSchema);
