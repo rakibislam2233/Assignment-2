@@ -8,13 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userController = exports.createUser = void 0;
+exports.userController = void 0;
 const user_service_1 = require("./user.service");
+const userValidation_1 = __importDefault(require("./userValidation"));
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { user: userData } = req.body;
-        const result = yield user_service_1.userService.createUserIntoDB(userData);
+        const validationData = userValidation_1.default.parse(userData);
+        const result = yield user_service_1.userService.createUserIntoDB(validationData);
         res.status(200).json({
             success: true,
             message: 'User created successfully!',
@@ -29,7 +34,49 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
 });
-exports.createUser = createUser;
+const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield user_service_1.userService.getAllUserFromDB();
+        res.status(200).json({
+            success: true,
+            message: 'Users fetched successfully!',
+            data: result,
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
+const getSingleUserFromDB = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const result = yield user_service_1.userService.getSingleUserFromDB(userId);
+        res.status(200).json({
+            success: true,
+            message: 'Users fetched successfully!',
+            data: result,
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
 exports.userController = {
-    createUser: exports.createUser,
+    createUser,
+    getAllUser,
+    getSingleUserFromDB,
 };
