@@ -19,11 +19,11 @@ const AddressValidationSchema = zod_1.default.object({
     city: zod_1.default.string().min(1).max(50),
     country: zod_1.default.string().min(1).max(50),
 });
-// const OrderValidationSchema = z.object({
-//   productName: z.string().min(1).max(100),
-//   price: z.number().min(0),
-//   quantity: z.number().min(1),
-// })
+const OrderValidationSchema = zod_1.default.object({
+    productName: zod_1.default.string().min(1).max(100),
+    price: zod_1.default.number().min(0),
+    quantity: zod_1.default.number().min(1),
+});
 const UserValidationSchema = zod_1.default.object({
     userId: zod_1.default.number(),
     username: zod_1.default.string().min(1).max(50),
@@ -39,6 +39,6 @@ const UserValidationSchema = zod_1.default.object({
     isActive: zod_1.default.boolean(),
     hobbies: zod_1.default.array(zod_1.default.string().min(1).max(50)),
     address: AddressValidationSchema,
-    //   orders: z.array(OrderValidationSchema),
+    orders: zod_1.default.array(OrderValidationSchema),
 });
 exports.default = UserValidationSchema;

@@ -10,11 +10,20 @@ const createUserIntoDB = async (userData: TUser) => {
   return result
 }
 const getAllUserFromDB = async () => {
-  const result = await User.find({}, { userId: 0})
+  const result = await User.find({}, { userId: 0 })
   return result
 }
 const getSingleUserFromDB = async (userId: string) => {
   const result = await User.findOne({ userId })
+  return result
+}
+const updateSingleUserFromDB = async (userId: string, userData: TUser) => {
+  const result = await User.updateOne(
+    { userId: userId },
+    {
+      $set: userData,
+    },
+  )
   return result
 }
 const deletedUserFromDB = async (userId: string) => {
@@ -26,5 +35,6 @@ export const userService = {
   createUserIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
+  updateSingleUserFromDB,
   deletedUserFromDB,
 }

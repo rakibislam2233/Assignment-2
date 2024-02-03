@@ -59,15 +59,43 @@ const getSingleUser = async (req: Request, res: Response) => {
     })
   }
 }
+const updateSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const { user: userData } = req.body
+    const validationData = UserValidationSchema.parse(userData)
+    const result = await userService.updateSingleUserFromDB(
+      userId,
+      validationData,
+    )
+    if (result.modifiedCount > 0) {
+      const updatedUser = await userService.getSingleUserFromDB(userId)
+      return res
+        .status(200)
+        .json({ message: 'User updated successfully!', data: updatedUser })
+    } else {
+      return res
+        .status(404)
+        .json({ message: 'User not found or no changes applied' })
+    }
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message || 'something went wrong',
+      error: error,
+    })
+  }
+}
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params
     const result = await userService.deletedUserFromDB(userId)
     if (result.modifiedCount > 0) {
+      const updatedUser = await userService.getSingleUserFromDB(userId)
       res.status(200).json({
         success: true,
         message: 'User deleted successfully!',
-        data: null,
+        data: updatedUser,
       })
     }
   } catch (error) {
@@ -85,5 +113,6 @@ export const userController = {
   createUser,
   getAllUser,
   getSingleUser,
+  updateSingleUser,
   deleteUser,
 }

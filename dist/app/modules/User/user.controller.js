@@ -75,15 +75,42 @@ const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
 });
+const updateSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const { user: userData } = req.body;
+        const validationData = userValidation_1.default.parse(userData);
+        const result = yield user_service_1.userService.updateSingleUserFromDB(userId, validationData);
+        if (result.modifiedCount > 0) {
+            const updatedUser = yield user_service_1.userService.getSingleUserFromDB(userId);
+            return res
+                .status(200)
+                .json({ message: 'User updated successfully!', data: updatedUser });
+        }
+        else {
+            return res
+                .status(404)
+                .json({ message: 'User not found or no changes applied' });
+        }
+    }
+    catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'something went wrong',
+            error: error,
+        });
+    }
+});
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
         const result = yield user_service_1.userService.deletedUserFromDB(userId);
         if (result.modifiedCount > 0) {
+            const updatedUser = yield user_service_1.userService.getSingleUserFromDB(userId);
             res.status(200).json({
                 success: true,
                 message: 'User deleted successfully!',
-                data: null,
+                data: updatedUser,
             });
         }
     }
@@ -102,5 +129,6 @@ exports.userController = {
     createUser,
     getAllUser,
     getSingleUser,
+    updateSingleUser,
     deleteUser,
 };
