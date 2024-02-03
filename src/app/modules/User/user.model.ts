@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
-import { TAddress, TFullName, TUser } from './user.interface'
+import { TAddress, TFullName, TUser, UserModel } from './user.interface'
+import config from '../../config'
+import bcrypt from 'bcrypt'
 
 //create fullname schema
 const FullNameSchema = new Schema<TFullName>({
@@ -33,7 +35,7 @@ const AddressSchema = new Schema<TAddress>({
 //   quantity: { type: Number, min: 1 },
 // })
 //create user schema
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: Number,
     required: [true, 'User id is required'],
@@ -81,5 +83,23 @@ const userSchema = new Schema<TUser>({
   //   },
 })
 
+userSchema.statics.isUserExist = async (id: number) => {
+  const existingUser = await User.findOne({ userId: id })
+  return existingUser
+}
+
+//document middleware
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_round),
+  )
+  next()
+})
+userSchema.post('save', async function (doc, next) {
+  doc.password = ''
+  next()
+})
+
 //create model
-export const User = model<TUser>('user', userSchema)
+export const User = model<TUser, UserModel>('user', userSchema)

@@ -7,15 +7,16 @@ const createUser = async (req: Request, res: Response) => {
     const { user: userData } = req.body
     const validationData = UserValidationSchema.parse(userData)
     const result = await userService.createUserIntoDB(validationData)
+    console.log(result);
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
       data: result,
     })
-  } catch (error) {
+  } catch (error:any) {
     res.status(400).json({
       success: false,
-      message: 'Something went wrong',
+      message: error.message || 'something went wrong',
       error: error,
     })
   }

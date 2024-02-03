@@ -20,6 +20,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { user: userData } = req.body;
         const validationData = userValidation_1.default.parse(userData);
         const result = yield user_service_1.userService.createUserIntoDB(validationData);
+        console.log(result);
         res.status(200).json({
             success: true,
             message: 'User created successfully!',
@@ -29,7 +30,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         res.status(400).json({
             success: false,
-            message: 'Something went wrong',
+            message: error.message || 'something went wrong',
             error: error,
         });
     }
