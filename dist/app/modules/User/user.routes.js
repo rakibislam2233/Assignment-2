@@ -9,5 +9,6 @@ const user_controller_1 = require("./user.controller");
 const route = express_1.default.Router();
 route.post('/', user_controller_1.userController.createUser);
 route.get('/', user_controller_1.userController.getAllUser);
-route.get('/:userId', user_controller_1.userController.getSingleUserFromDB);
+route.get('/:userId', user_controller_1.userController.getSingleUser);
+route.delete('/:userId', user_controller_1.userController.deleteUser);
 exports.userRoute = route;

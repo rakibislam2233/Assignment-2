@@ -35,58 +35,70 @@ const AddressSchema = new Schema<TAddress>({
 //   quantity: { type: Number, min: 1 },
 // })
 //create user schema
-const userSchema = new Schema<TUser, UserModel>({
-  userId: {
-    type: Number,
-    required: [true, 'User id is required'],
-    unique: true,
+const userSchema = new Schema<TUser, UserModel>(
+  {
+    userId: {
+      type: Number,
+      required: [true, 'User id is required'],
+      unique: true,
+    },
+    username: {
+      type: String,
+      required: [true, 'Username is required'],
+      unique: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    fullName: {
+      type: FullNameSchema,
+      required: true,
+    },
+    age: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
+    hobbies: {
+      type: [String],
+      required: true,
+    },
+    address: {
+      type: AddressSchema,
+      required: true,
+    },
+    //   orders: {
+    //     type: [OrderSchema],
+    //   },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  username: {
-    type: String,
-    required: [true, 'Username is required'],
-    unique: true,
-    trim: true,
+  {
+    toJSON: {
+      virtuals: true,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  fullName: {
-    type: FullNameSchema,
-    required: true,
-  },
-  age: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    required: true,
-    default: true,
-  },
-  hobbies: {
-    type: [String],
-    required: true,
-  },
-  address: {
-    type: AddressSchema,
-    required: true,
-  },
-  //   orders: {
-  //     type: [OrderSchema],
-  //   },
-})
-
+)
 userSchema.statics.isUserExist = async (id: number) => {
   const existingUser = await User.findOne({ userId: id })
   return existingUser
 }
+//virtual
+// userSchema.virtual('fullName', async function () {})
 
 //document middleware
 userSchema.pre('save', async function (next) {
@@ -98,6 +110,27 @@ userSchema.pre('save', async function (next) {
 })
 userSchema.post('save', async function (doc, next) {
   doc.password = ''
+  next()
+})
+//query middleware
+userSchema.pre('find', async function (next) {
+  this.find({ isDeleted: { $ne: true } }).projection({
+    userId: 0,
+    password: 0,
+    isDeleted: 0,
+  })
+  next()
+})
+userSchema.pre('findOne', async function (next) {
+  this.find({ isDeleted: { $ne: true } }).projection({
+    password: 0,
+    isDeleted: 0,
+  })
+  next()
+})
+//aggregation middleware
+userSchema.pre('aggregate', async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
   next()
 })
 

@@ -20,15 +20,20 @@ const createUserIntoDB = (userData) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 const getAllUserFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.User.find({}, { userId: 0, password: 0 });
+    const result = yield user_model_1.User.find({}, { userId: 0 });
     return result;
 });
 const getSingleUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.User.findOne({ userId }, { password: 0 });
+    const result = yield user_model_1.User.findOne({ userId });
+    return result;
+});
+const deletedUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.updateOne({ userId }, { isDeleted: true });
     return result;
 });
 exports.userService = {
     createUserIntoDB,
     getAllUserFromDB,
     getSingleUserFromDB,
+    deletedUserFromDB,
 };

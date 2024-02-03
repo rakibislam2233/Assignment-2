@@ -26,6 +26,7 @@ export type TUser = {
   hobbies: string[]
   address: TAddress
   //   orders?: TOrder[]
+  isDeleted?: boolean
 }
 //creating static methods
 export interface UserModel extends Model<TUser> {

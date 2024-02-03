@@ -92,11 +92,21 @@ const userSchema = new mongoose_1.Schema({
     //   orders: {
     //     type: [OrderSchema],
     //   },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+}, {
+    toJSON: {
+        virtuals: true,
+    },
 });
 userSchema.statics.isUserExist = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const existingUser = yield exports.User.findOne({ userId: id });
     return existingUser;
 });
+//virtual
+// userSchema.virtual('fullName', async function () {})
 //document middleware
 userSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -107,6 +117,33 @@ userSchema.pre('save', function (next) {
 userSchema.post('save', function (doc, next) {
     return __awaiter(this, void 0, void 0, function* () {
         doc.password = '';
+        next();
+    });
+});
+//query middleware
+userSchema.pre('find', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isDeleted: { $ne: true } }).projection({
+            userId: 0,
+            password: 0,
+            isDeleted: 0,
+        });
+        next();
+    });
+});
+userSchema.pre('findOne', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isDeleted: { $ne: true } }).projection({
+            password: 0,
+            isDeleted: 0,
+        });
+        next();
+    });
+});
+//aggregation middleware
+userSchema.pre('aggregate', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
         next();
     });
 });

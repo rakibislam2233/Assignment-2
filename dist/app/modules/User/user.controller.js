@@ -20,7 +20,6 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const { user: userData } = req.body;
         const validationData = userValidation_1.default.parse(userData);
         const result = yield user_service_1.userService.createUserIntoDB(validationData);
-        console.log(result);
         res.status(200).json({
             success: true,
             message: 'User created successfully!',
@@ -55,7 +54,7 @@ const getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
 });
-const getSingleUserFromDB = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
         const result = yield user_service_1.userService.getSingleUserFromDB(userId);
@@ -76,8 +75,32 @@ const getSingleUserFromDB = (req, res) => __awaiter(void 0, void 0, void 0, func
         });
     }
 });
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const result = yield user_service_1.userService.deletedUserFromDB(userId);
+        if (result.modifiedCount > 0) {
+            res.status(200).json({
+                success: true,
+                message: 'User deleted successfully!',
+                data: null,
+            });
+        }
+    }
+    catch (error) {
+        res.status(400).json({
+            success: false,
+            message: 'User not found',
+            error: {
+                code: 404,
+                description: 'User not found!',
+            },
+        });
+    }
+});
 exports.userController = {
     createUser,
     getAllUser,
-    getSingleUserFromDB,
+    getSingleUser,
+    deleteUser,
 };
