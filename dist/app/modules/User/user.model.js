@@ -91,6 +91,7 @@ const userSchema = new mongoose_1.Schema({
     },
     orders: {
         type: [OrderSchema],
+        required: false,
     },
     isDeleted: {
         type: Boolean,
@@ -127,16 +128,14 @@ userSchema.pre('find', function (next) {
             userId: 0,
             password: 0,
             isDeleted: 0,
+            orders: 0,
         });
         next();
     });
 });
 userSchema.pre('findOne', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        this.find({ isDeleted: { $ne: true } }).projection({
-            password: 0,
-            isDeleted: 0,
-        });
+        this.find({ isDeleted: { $ne: true } });
         next();
     });
 });

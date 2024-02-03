@@ -16,7 +16,11 @@ const createUserIntoDB = (userData) => __awaiter(void 0, void 0, void 0, functio
         throw new Error('User already exists');
     }
     const createdUser = yield user_model_1.User.create(userData);
-    const result = yield user_model_1.User.findById(createdUser._id).select('-password');
+    const result = yield user_model_1.User.findById(createdUser._id).select([
+        '-password',
+        '-orders',
+        '-isDeleted',
+    ]);
     return result;
 });
 const getAllUserFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,7 +28,7 @@ const getAllUserFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getSingleUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.User.findOne({ userId });
+    const result = yield user_model_1.User.findOne({ userId }, { password: 0, isDeleted: 0, orders: 0 });
     return result;
 });
 const updateSingleUserFromDB = (userId, userData) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,6 +36,33 @@ const updateSingleUserFromDB = (userId, userData) => __awaiter(void 0, void 0, v
         $set: userData,
     });
     return result;
+});
+const addOrderIntoDB = (userId, orderData) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.updateOne({ userId: userId }, { $push: orderData });
+    return result;
+});
+const getOrderFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.findOne({ userId }, { orders: 1 });
+    return result;
+});
+const getTotalPriceFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.aggregate([
+        {
+            $match: { userId: Number(userId) },
+        },
+        {
+            $unwind: '$orders',
+        },
+        {
+            $group: {
+                _id: null,
+                totalPrice: {
+                    $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+                },
+            },
+        },
+    ]);
+    return result[0].totalPrice;
 });
 const deletedUserFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.User.updateOne({ userId }, { isDeleted: true });
@@ -42,5 +73,8 @@ exports.userService = {
     getAllUserFromDB,
     getSingleUserFromDB,
     updateSingleUserFromDB,
+    addOrderIntoDB,
+    getOrderFromDB,
+    getTotalPriceFromDB,
     deletedUserFromDB,
 };

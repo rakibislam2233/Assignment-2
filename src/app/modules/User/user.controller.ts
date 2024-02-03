@@ -12,6 +12,7 @@ const createUser = async (req: Request, res: Response) => {
       message: 'User created successfully!',
       data: result,
     })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(400).json({
       success: false,
@@ -78,11 +79,80 @@ const updateSingleUser = async (req: Request, res: Response) => {
         .status(404)
         .json({ message: 'User not found or no changes applied' })
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(400).json({
       success: false,
       message: error.message || 'something went wrong',
       error: error,
+    })
+  }
+}
+const addOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const orderData = req.body
+    const result = await userService.addOrderIntoDB(userId, orderData)
+    if (result.modifiedCount > 0) {
+      const updatedData = await userService.getOrderFromDB(userId)
+      return res.status(200).json({
+        success: true,
+        message: 'Order created successfully!',
+        data: updatedData,
+      })
+    } else {
+      return res
+        .status(404)
+        .json({ message: 'User not found or no changes applied' })
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message || 'something went wrong',
+      error: error,
+    })
+  }
+}
+const getOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const result = await userService.getOrderFromDB(userId)
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    })
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    })
+  }
+}
+const getTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const result = await userService.getTotalPriceFromDB(userId)
+    res.status(200).json({
+      success: true,
+      message: 'Total price calculated successfully!',
+      data: {
+        totalPrice: result,
+      },
+    })
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
     })
   }
 }
@@ -114,5 +184,8 @@ export const userController = {
   getAllUser,
   getSingleUser,
   updateSingleUser,
+  addOrder,
+  getOrder,
+  getTotalPrice,
   deleteUser,
 }

@@ -81,6 +81,7 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     orders: {
       type: [OrderSchema],
+      required: false,
     },
     isDeleted: {
       type: Boolean,
@@ -118,14 +119,12 @@ userSchema.pre('find', async function (next) {
     userId: 0,
     password: 0,
     isDeleted: 0,
+    orders: 0,
   })
   next()
 })
 userSchema.pre('findOne', async function (next) {
-  this.find({ isDeleted: { $ne: true } }).projection({
-    password: 0,
-    isDeleted: 0,
-  })
+  this.find({ isDeleted: { $ne: true } })
   next()
 })
 //aggregation middleware
@@ -133,6 +132,5 @@ userSchema.pre('aggregate', async function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
   next()
 })
-
 //create model
 export const User = model<TUser, UserModel>('user', userSchema)
