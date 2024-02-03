@@ -12,6 +12,12 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 // application routes
 app.use('/api/users', user_routes_1.userRoute);
+app.all('*', (req, res) => {
+    res.status(400).json({
+        success: false,
+        message: 'Route not found!',
+    });
+});
 app.use('/', (req, res) => {
     res.json({
         success: true,
